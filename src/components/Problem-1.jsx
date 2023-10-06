@@ -1,12 +1,34 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 const Problem1 = () => {
 
-    const [show, setShow] = useState('all');
+    const [show, setShow]                           = useState('all');
+    const [formObject, setFormObject]               = useState({ name: '', status: '' });
+    const [savedArrayData, setSavedArrayData]       = useState([]);
+    const [filteredDataArray, setFilteredDataArray] = useState([]);
 
     const handleClick = (val) =>{
         setShow(val);
     }
+
+    const onInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormObject((prevData) => ({ ...prevData, [name]: value }));
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSavedArrayData((prevList) => [...prevList, formObject]);
+        setFormObject({ name: '', status: '' });
+    }
+
+    useEffect(() => {
+        if (show === 'all') {
+            setFilteredDataArray(savedArrayData);
+        } else {
+            setFilteredDataArray(savedArrayData?.filter(data => data?.status?.toLowerCase() === show));
+        }
+    }, [show,savedArrayData]);
 
     return (
 
@@ -14,12 +36,26 @@ const Problem1 = () => {
             <div className="row justify-content-center mt-5">
                 <h4 className='text-center text-uppercase mb-5'>Problem-1</h4>
                 <div className="col-6 ">
-                    <form className="row gy-2 gx-3 align-items-center mb-4">
+                    <form className="row gy-2 gx-3 align-items-center mb-4" onSubmit={handleSubmit}>
                         <div className="col-auto">
-                            <input type="text" className="form-control" placeholder="Name"/>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                placeholder="Name"
+                                name="name"
+                                value={formObject.name}
+                                onChange={onInputChange}
+                            />
                         </div>
                         <div className="col-auto">
-                            <input type="text" className="form-control" placeholder="Status"/>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                placeholder="Status"
+                                name="status"
+                                value={formObject.status}
+                                onChange={onInputChange}
+                            />
                         </div>
                         <div className="col-auto">
                             <button type="submit" className="btn btn-primary">Submit</button>
@@ -48,6 +84,13 @@ const Problem1 = () => {
                         </thead>
                         <tbody>
                         
+                            {filteredDataArray?.map((data, index) => (
+                                <tr key={index}>
+                                    <td>{data?.name}</td>
+                                    <td>{data?.status}</td>
+                                </tr>
+                            ))}
+
                         </tbody>
                     </table>
                 </div>
